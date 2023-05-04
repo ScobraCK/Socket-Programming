@@ -59,6 +59,11 @@ def parse_data(status: int, type: str, ip: str=None, dname: str=None):
     payload = MyDNSProtocol(status=status, data=data_field)
     return json.dumps(payload, ensure_ascii=False).encode('utf-8')
 
+def check_db(dns: DNS):
+    for row in dns.cur.execute("""SELECT * FROM domains"""):
+        print(row)
+     
+
 if __name__ == "__main__":
     dns = DNS()
     try:
@@ -72,10 +77,8 @@ if __name__ == "__main__":
     except sqlite3.IntegrityError as e:
         print(f"Error: {e}")
 
-
-    for row in dns.cur.execute("""SELECT * FROM domains"""):
-        print(row)
-
+    check_db(dns)
+    
     # print()
     # print(ip[0])
     # print(domain[0])
