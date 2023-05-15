@@ -14,6 +14,10 @@ class DNS():
         self.cur.execute(f"INSERT INTO domains VALUES (?, ?)", (ip, dname))
         self.con.commit()
 
+    def delete_domain(self, ip: str, dname: str):
+        self.cur.execute(f"DELETE FROM domains WHERE ip = ? AND dname = ?", (ip, dname))
+        self.con.commit()
+
     def search_ip(self, ip: str):
         res = self.cur.execute(f"SELECT dname FROM domains WHERE ip=?", (ip,))  # tuple
         return res.fetchone()
@@ -76,7 +80,7 @@ if __name__ == "__main__":
         # ip = dns.search_dname('test.domain')
     except sqlite3.IntegrityError as e:
         print(f"Error: {e}")
-
+        
     check_db(dns)
     
     # print()
