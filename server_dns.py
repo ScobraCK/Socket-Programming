@@ -5,9 +5,11 @@ host = 'localhost'
 port = 12000
 
 def check_ip():
+    '''check if IP is valid format'''
     pass
 
 def check_domain():
+    '''check if domain name is valid format'''
     pass
 
 if __name__ == "__main__":
@@ -38,6 +40,7 @@ if __name__ == "__main__":
                             print('Success')
                             conn.sendall(parse_data(1, 'A', data['data']['ip'], data['data']['dname']))
                         except sqlite3.IntegrityError:
+                            conn.sendall(parse_data(10, 'A', data['data']['ip'], data['data']['dname']))  # status: 10 = fail
                             print('Failed')
                     elif (status := data.get('status') == 2):
                         print('Delete Request: ', end='')
@@ -46,7 +49,7 @@ if __name__ == "__main__":
                             dns_server.delete_domain(data['data']['ip'], data['data']['dname'])
                             print('Success')
                             conn.sendall(parse_data(2, 'A', data['data']['ip'], data['data']['dname']))
-                        except sqlite3.IntegrityError:
+                        except sqlite3.IntegrityError:  # need to check a failed input return value or error
                             print('Failed')
                     elif (status := data.get('status') == 3):
                         print('Search IP Request: ', end='')
@@ -55,7 +58,7 @@ if __name__ == "__main__":
                             dns_server.search_ip(data['data']['ip'])
                             print('Success')
                             conn.sendall(parse_data(3, 'A', data['data']['ip'], data['data']['dname']))
-                        except sqlite3.IntegrityError:
+                        except sqlite3.IntegrityError:  # need to check a failed input return value (whether it is None etc) instead of try, except
                             print('Failed')
                     elif (status := data.get('status') == 4):
                         print('Search Domain Request: ', end='')
@@ -64,7 +67,7 @@ if __name__ == "__main__":
                             dns_server.search_domain(data['data']['dname'])
                             print('Success')
                             conn.sendall(parse_data(4, 'A', data['data']['ip'], data['data']['dname']))
-                        except sqlite3.IntegrityError:
+                        except sqlite3.IntegrityError:  # need to check a failed input return value (whether it is None etc) instead of try, except
                             print('Failed')
                     break
               
