@@ -1,7 +1,7 @@
 import socket
 from dns import *
 
-host = 'localhost'
+host = '0.0.0.0'
 port = 12000
 
 def check_ip():
@@ -33,7 +33,7 @@ if __name__ == "__main__":
 
                     # decode read data format
                     data = read_data(raw_data)
-                    type = data['data']['type']
+                    type = data['data']['type']  # unused
                     ip = data['data']['ip']
                     dname = data['data']['dname']
 
@@ -51,6 +51,7 @@ if __name__ == "__main__":
                         except sqlite3.IntegrityError:
                             conn.sendall(parse_data(10))  # status: 10 = fail
                             print('Failed')
+                    # delete
                     elif (status == 2):
                         print('Delete Request: ', end='')
                         if (dns.search_ip(ip) == dname):
@@ -60,7 +61,7 @@ if __name__ == "__main__":
                         else:
                             print('Fail')
                             conn.sendall(parse_data(12))
-
+                    # search
                     elif (status == 3):
                         print('Search IP Request: ', end='')
                         if not ip:
@@ -69,7 +70,7 @@ if __name__ == "__main__":
                         else:
                             if (found_dname := dns_server.search_ip(ip)):
                                 print('Success')
-                                conn.sendall(parse_data(1, dname=found_dname))
+                                conn.sendall(parse_data(1, ip=ip, dname=found_dname))
                             else: # found_dname == None
                                 print('Failed (Not found)')
                                 conn.sendall(parse_data(14))
@@ -81,7 +82,7 @@ if __name__ == "__main__":
                         else:
                             if (found_ip := dns_server.search_dname(ip)):
                                 print('Success')
-                                conn.sendall(parse_data(1, ip=found_ip))
+                                conn.sendall(parse_data(1, ip=found_ip, dname = dname))
                             else: # found_dname == None
                                 print('Failed (Not found)')
                                 conn.sendall(parse_data(14))

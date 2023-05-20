@@ -1,5 +1,6 @@
 import sqlite3, json
 from typing import TypedDict, Optional
+from enum import Enum
 
 class DNS():
     def __init__(self) -> None:
