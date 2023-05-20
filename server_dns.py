@@ -58,7 +58,7 @@ if __name__ == "__main__":
                         if (dns_server.search_ip(ip) == dname):
                             dns_server.delete_domain(ip, dname)
                             print('Success')
-                            conn.sendall(parse_data(2))
+                            conn.sendall(parse_data(1))
                         else:
                             print('Fail')
                             conn.sendall(parse_data(12))
@@ -71,7 +71,7 @@ if __name__ == "__main__":
                         else:
                             if (found_dname := dns_server.search_ip(ip)):
                                 print('Success')
-                                conn.sendall(parse_data(3, ip=ip, dname=found_dname))
+                                conn.sendall(parse_data(1, ip=ip, dname=found_dname))
                             else: # found_dname == None
                                 print('Failed (Not found)')
                                 conn.sendall(parse_data(14))
@@ -83,7 +83,7 @@ if __name__ == "__main__":
                         else:
                             if (found_ip := dns_server.search_dname(dname)):
                                 print('Success')
-                                conn.sendall(parse_data(4, ip=found_ip, dname = dname))
+                                conn.sendall(parse_data(1, ip=found_ip, dname = dname))
                             else: # found_dname == None
                                 print('Failed (Not found)')
                                 conn.sendall(parse_data(14))
