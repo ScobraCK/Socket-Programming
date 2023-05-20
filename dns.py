@@ -20,11 +20,19 @@ class DNS():
 
     def search_ip(self, ip: str):
         res = self.cur.execute(f"SELECT dname FROM domains WHERE ip=?", (ip,))  # tuple
-        return res.fetchone()
+        data = res.fetchone()
+        if data:
+            return data[0]
+        else:
+            return None
     
     def search_dname(self, domain: str):
         res = self.cur.execute(f"SELECT ip FROM domains WHERE dname=?", (domain,))  # tuple
-        return res.fetchone()
+        data = res.fetchone()
+        if data:
+            return data[0]
+        else:
+            return None
     
     def close(self):
         self.con.close()
@@ -39,15 +47,18 @@ class MyDNSProtocol(TypedDict):
     status flag
     Client
     1: insert
-    2: read
-    3: delete (matching ip, dname)
+    2: delete (matching ip, dname)
+    3: search ip
+    4: search dname
+    
 
     Server
     1: ok
     
-    10: Failed Read
     11: Failed Insert (duplicate data exists)
     12: Failed Delete (non-matching ip,dname)
+    13: Failed Search (ip/dname was not given)
+    14: Failed Search (not found)
 
     20: Unknown Request
     '''
@@ -58,7 +69,7 @@ def read_data(data):
     json_data = json.loads(data.decode('utf-8'))  # byte string -> dict
     return MyDNSProtocol(json_data)
 
-def parse_data(status: int, type: str, ip: str=None, dname: str=None):
+def parse_data(status: int, type: str='A', ip: str=None, dname: str=None):
     data_field = DataField(type=type, ip=ip, dname=dname)
     payload = MyDNSProtocol(status=status, data=data_field)
     return json.dumps(payload, ensure_ascii=False).encode('utf-8')
@@ -80,15 +91,16 @@ if __name__ == "__main__":
         # ip = dns.search_dname('test.domain')
     except sqlite3.IntegrityError as e:
         print(f"Error: {e}")
-        
+    
+    print(dns.search_ip('1.1.1.1'))
     check_db(dns)
     
     # print()
     # print(ip[0])
     # print(domain[0])
 
-    # test={'status': 200, 'data': {'type': 'A', 'ip': '1.2.3.4'}}
-    # test_dict = MyDNSProtocol(test)
-    # print(test_dict)
+    test=parse_data(1, ip='test')
+    test_dict = read_data(test)
+    print(test_dict['data']['dname'])
 
     
