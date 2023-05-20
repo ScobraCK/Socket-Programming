@@ -13,39 +13,46 @@ if __name__ == "__main__":
         s.connect((host, port))
         print('Connected to server')
 
-        mode = int(input('Enter Mode(Insert: 1, Delete: 2, Search IP: 3, Search Domain: 4): '))
-        ip = None
-        dname = None
+        while True:
+            print('\nSelect Mode(Exit: 0, Insert: 1, Delete: 2, Search IP: 3, Search Domain: 4)')
+            mode = int(input('Mode: '))
 
-        # input ip
-        if mode != 4:  # no need in search dname 
-            while not ip:
-                ip = input('IP: ')
+            if mode == 0:
+                break
+            ip = None
+            dname = None
 
-        # input dname
-        if mode != 3:
-            while not dname:
-                dname = input('Domain Name: ')
+            # input ip
+            if mode != 4:  # no need in search dname 
+                while not ip:
+                    ip = input('IP: ')
 
-        request = parse_data(mode, ip=ip, dname=dname)
-        s.sendall(request)
-        raw_data = s.recv(2048)
+            # input dname
+            if mode != 3:
+                while not dname:
+                    dname = input('Domain Name: ')
 
-        data = read_data(raw_data)
+            request = parse_data(mode, ip=ip, dname=dname)
+            s.sendall(request)
+            raw_data = s.recv(2048)
 
-        if (status := data['status']) == 1:
-            print('Success')
-            if mode == 3 or mode == 4:
-                print(f"IP: {data['data']['ip']}, Domain Name: {data['data']['dname']}")
+            data = read_data(raw_data)
 
-        elif mode == 1 and status == 11:
-            print('Failed insert due to duplicate entry')
-        elif mode == 2 and status == 12:
-            print('Failed delete due to incorrect ip')
-        elif mode == 3 and status == 11:
-            print('Failed Insert due to empty search value')
-        elif mode == 3 and status == 11:  # entry not found
-            print('Searched entry was not found')
+            if (status := data['status']) == 1:
+                print('Success')
+                if mode == 3 or mode == 4:
+                    print(f"IP: {data['data']['ip']}, Domain Name: {data['data']['dname']}")
+
+            elif status == 11:
+                print('Failed insert due to duplicate entry')
+            elif status == 12:
+                print('Failed delete due to incorrect ip')
+            elif status == 13:
+                print('Failed Insert due to empty search value')
+            elif status == 14:  # entry not found
+                print('Searched entry was not found')
+            else:
+                print('Unknown Request')
 
         s.close()
     input()

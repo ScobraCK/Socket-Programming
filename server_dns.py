@@ -28,7 +28,8 @@ if __name__ == "__main__":
                     raw_data = conn.recv(2048)
 
                     # connection closed
-                    if not raw_data:  
+                    if not raw_data:
+                        print(f'Connection closed - {addr}')
                         break
 
                     # decode read data format
@@ -49,7 +50,7 @@ if __name__ == "__main__":
                             print('Success')
                             conn.sendall(parse_data(1))
                         except sqlite3.IntegrityError:
-                            conn.sendall(parse_data(10))  # status: 10 = fail
+                            conn.sendall(parse_data(11))  # status: 11 = fail
                             print('Failed')
                     # delete
                     elif (status == 2):
@@ -80,7 +81,7 @@ if __name__ == "__main__":
                             print('Fail')
                             conn.sendall(parse_data(13))
                         else:
-                            if (found_ip := dns_server.search_dname(ip)):
+                            if (found_ip := dns_server.search_dname(dname)):
                                 print('Success')
                                 conn.sendall(parse_data(1, ip=found_ip, dname = dname))
                             else: # found_dname == None
@@ -91,4 +92,4 @@ if __name__ == "__main__":
                         print('Unknown Request')
                         conn.sendall(parse_data(20))
                     
-              
+            
