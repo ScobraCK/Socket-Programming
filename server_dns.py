@@ -55,7 +55,7 @@ if __name__ == "__main__":
                     # delete
                     elif (status == 2):
                         print('Delete Request: ', end='')
-                        if (dns.search_ip(ip) == dname):
+                        if (dns_server.search_ip(ip) == dname):
                             dns_server.delete_domain(ip, dname)
                             print('Success')
                             conn.sendall(parse_data(1))
