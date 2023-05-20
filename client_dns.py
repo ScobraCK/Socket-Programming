@@ -46,7 +46,7 @@ if __name__ == "__main__":
             elif status == 11:
                 print('Failed insert due to duplicate entry')
             elif status == 12:
-                print('Failed delete due to incorrect ip')
+                print('Failed delete due to incorrect ip or dname')
             elif status == 13:
                 print('Failed Insert due to empty search value')
             elif status == 14:  # entry not found
