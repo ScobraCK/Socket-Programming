@@ -15,7 +15,10 @@ if __name__ == "__main__":
 
         while True:
             print('\nSelect Mode(Exit: 0, Insert: 1, Delete: 2, Search IP: 3, Search Domain: 4)')
-            mode = int(input('Mode: '))
+            try:
+                mode = int(input('Mode: '))
+            except ValueError:
+                continue
 
             if mode == 0:
                 break
