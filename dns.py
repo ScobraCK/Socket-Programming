@@ -20,6 +20,7 @@ class DNS():
         self.con.commit()
 
     def search_ip(self, ip: str):
+        '''Search using ip'''
         res = self.cur.execute(f"SELECT dname FROM domains WHERE ip=?", (ip,))  # tuple
         data = res.fetchone()
         if data:
@@ -28,6 +29,7 @@ class DNS():
             return None
     
     def search_dname(self, domain: str):
+        '''Search using dname'''
         res = self.cur.execute(f"SELECT ip FROM domains WHERE dname=?", (domain,))  # tuple
         data = res.fetchone()
         if data:
@@ -92,16 +94,6 @@ if __name__ == "__main__":
         # ip = dns.search_dname('test.domain')
     except sqlite3.IntegrityError as e:
         print(f"Error: {e}")
-    
-    print(dns.search_ip('1.1.1.1'))
+
     check_db(dns)
-    
-    # print()
-    # print(ip[0])
-    # print(domain[0])
-
-    test=parse_data(1, ip='test')
-    test_dict = read_data(test)
-    print(test_dict['data']['dname'])
-
-    
+    input()

@@ -21,7 +21,7 @@ if __name__ == "__main__":
         print(f'Server listening on port {port}')
         while True:
             conn, addr = s.accept()
-            print(f'Connected by {addr} - ', end='')
+            print(f'Connected by {addr}')
             with conn:  # context manager to ensure exit
                 while True:
                     # recieve data           
@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
                     # connection closed
                     if not raw_data:
-                        print(f'Connection closed - {addr}')
+                        print(f'Connection closed by {addr}')
                         break
 
                     # decode read data format
@@ -47,7 +47,7 @@ if __name__ == "__main__":
                         print('Insert Request: ', end='')
                         try:
                             dns_server.insert_domain(ip, dname)
-                            print('Success')
+                            print(f'Success - ({ip}: {dname})')
                             conn.sendall(parse_data(1))
                         except sqlite3.IntegrityError:
                             conn.sendall(parse_data(11))  # status: 11 = fail
@@ -57,7 +57,7 @@ if __name__ == "__main__":
                         print('Delete Request: ', end='')
                         if (dns_server.search_ip(ip) == dname):
                             dns_server.delete_domain(ip, dname)
-                            print('Success')
+                            print(f'Success - ({ip}: {dname})')
                             conn.sendall(parse_data(1))
                         else:
                             print('Fail')
@@ -70,7 +70,7 @@ if __name__ == "__main__":
                             conn.sendall(parse_data(13))
                         else:
                             if (found_dname := dns_server.search_ip(ip)):
-                                print('Success')
+                                print(f'Success - ({ip}: {found_dname})')
                                 conn.sendall(parse_data(1, ip=ip, dname=found_dname))
                             else: # found_dname == None
                                 print('Failed (Not found)')
@@ -82,7 +82,7 @@ if __name__ == "__main__":
                             conn.sendall(parse_data(13))
                         else:
                             if (found_ip := dns_server.search_dname(dname)):
-                                print('Success')
+                                print(f'Success - ({found_ip}: {dname})')
                                 conn.sendall(parse_data(1, ip=found_ip, dname = dname))
                             else: # found_dname == None
                                 print('Failed (Not found)')
@@ -91,5 +91,3 @@ if __name__ == "__main__":
                     else:
                         print('Unknown Request')
                         conn.sendall(parse_data(20))
-                    
-            
